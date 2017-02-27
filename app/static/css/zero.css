@@ -1,0 +1,132 @@
+body{
+  color: #777;
+  background-color: #1F1F1F;
+}
+
+a,
+a.visited,
+a.active {
+  text-decoration: none;
+}
+
+.channel-box {
+  margin-bottom: 2.0em;
+}
+
+
+.channel-name a {
+    text-decoration: none;
+    font-size: 1.5em;
+}
+
+.channel-status em{
+    color: #8391A6;
+}
+
+.titlebar {
+    border-bottom: 1px solid gray;
+    padding: 0.3em;
+    padding-left: 2em;
+    color: #777;
+    background-color: #0D0D0D;
+}
+
+.titlebar h1 {
+    padding: 0;
+    margin: 0;
+}
+
+.button.button-primary {
+  background-color: #1EAEDB;
+  color: white;
+}
+
+.button.button-primary:hover {
+  background-color: #37EAC4;
+}
+
+.button.disabled {
+  background-color: #999;
+  color: #444;
+}
+
+.nav {
+  background-color: #1EAEDB;
+  border-bottom: 3px groove gray;
+  padding-left: 1.0em;
+}
+
+.nav ul{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav li{
+  display: block;
+  float: left;
+  margin: 0;
+  padding: 0;
+  margin-left: 1em;
+  margin-right: 2em;
+  width: 4.0em;
+
+}
+
+.nav a {
+  color: #222;
+}
+
+.clear {
+  clear: both;
+}
+
+.selector {
+  text-align: center;
+}
+
+hr.foot {
+  margin-bottom: 0;
+}
+
+.footer {
+  margin: 1em 4em;
+}
+
+.preview {
+  text-align: right;
+}
+
+.right{
+  float: right;
+}
+
+.nav li.right {
+  float: right;
+  margin-right: 1em;
+}
+
+.nav li.autow {
+  width: auto;
+}
+
+#nav-username {
+  font-weight: bold;
+  color: #6F06B9;
+}
+
+img.star {
+    width: 1em;
+    height: 1em;
+}
+
+button.star-button {
+    line-height: 16px;
+    height: 16px;
+    padding: 0 10px;
+}
+
+button.star-button.starred {
+  background-color: #6441A5;
+  border-color: #777777;
+}

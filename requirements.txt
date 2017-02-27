@@ -1,0 +1,8 @@
+Flask
+Flask-OAuthlib
+redis
+requests
+dateutils
+pytz
+peewee
+iso639

@@ -1,0 +1,41 @@
+<div class="nav">
+  <ul>
+    {% if meta.login_enabled %}
+    <li class="right">
+      {% if meta.logged_in %}
+      <a href="/logout">Logout</a>
+      {% else %}
+      <a href="/login" title="Login via Twitch to add stars to channels">Login</a>
+      {% endif %}
+    </li>
+
+    {% if meta.logged_in %}
+    <li class="right autow" id="nav-username">
+      <strong>{{meta.user_name}}</strong>
+    </li>
+    {% endif %}
+    {% endif %}
+
+    <li>
+      <a href="/channels">
+        Channels
+      </a>
+    </li>
+    <li>
+      <a href="/games">
+        Games
+      </a>
+    </li>
+    <li>
+      <a href="/about">
+        About
+      </a>
+    </li>
+    <li>
+      <a href="/donate">
+        Donate
+      </a>
+    </li>
+  </ul>
+  <div class="clear"></div>
+</div>

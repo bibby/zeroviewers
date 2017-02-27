@@ -1,0 +1,41 @@
+{% extends 'base.j2' %}
+
+{% block content %}
+<div class="container">
+  <h2>{{meta.game_name}}</h2>
+  <p>
+    <span>These are channels currently live on </span>
+    <a href="https://twitch.tv" target="twitch">twitch.tv</a>
+    <span>with {{meta.max_viewers}} viewers{% if meta.max_viewers > 0 %} or fewer{% endif %}.</span>
+    <br />
+    <span>
+      Updated <span class="uptime" data-time="{{meta.cached}}">moments</span> ago.
+    </span>
+    <p>
+{% include 'paging.j2' %}
+  <p>
+    Displaying channels <strong>{{meta.range_min}} &mdash; {{meta.range_max}}</strong> of {{meta.filtered_count}}.
+    <br />
+    Sort by <a href="?sort=stars">Stars</a> |
+    <a href="?sort=views">Views</a> |
+    <a href="?sort=followers">Followers</a> |
+    <a href="?sort=viewers">Viewers</a> |
+    <a href="?sort=uptime">Uptime</a> |
+    <a href="?sort=fps">Fps</a>
+  </p>
+{% for channel in channels %}
+  {% include 'channel.j2' %}
+{% else %}
+  <em>no channels cached. Check back in a few minutes</em>
+{% endfor %}
+{% include 'paging.j2' %}
+</div>
+{% endblock %}
+
+
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('static', filename='js/timer.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/channels.js') }}"></script>
+{% endblock %}

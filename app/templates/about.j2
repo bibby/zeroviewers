@@ -1,0 +1,44 @@
+{% extends 'base.j2' %}
+
+{% block content %}
+<div class="container">
+  <h2>About ZeroViewers</h2>
+  <p>
+    <span>This site is a volunteer effort, launched on 2 June 2016.</span>
+    <br />
+    <span>This is an </span>
+    <strong>
+      {{meta.app_phase}}
+    </strong>
+    <span>stage project, offering <strong>no guarantee</strong> of accuracy, availability, or fitness.</span>
+  </p>
+
+  <p>
+    Questions, comments, and suggestions may be sent to <a href="mailto:{{meta.contact_email}}">{{meta.contact_email}}</a>.
+  </p>
+
+  <p>
+    Every few minutes, the site reads channels from the twitch API in reverse order, and selects qualifying channels for display.
+  </p>
+
+  <p>The criteria for selection is currently:</p>
+
+  <ul>
+    <li>Live for at least {{meta.min_live_minutes}} minutes</li>
+    <li>Live for less than {{meta.max_live_minutes}} minutes (AFKs, robots)</li>
+    <li>Has {{meta.max_viewers}} viewers{% if meta.max_viewers > 0 %} or fewer{% endif %}</li>
+    <li>Not a twitch partner</li>
+    <li>Not a playlist type stream</li>
+    <li><strike>Broadcaster language in English</strike></li>
+  </ul>
+
+  <h2>Todo</h2>
+  <ul>
+    <li><strike>Additional language filters.</strike></li>
+    <li><strike><em>Scoring</em> or sorts for sorting</strike></li>
+    <li><strike>User rating system</strike></li>
+    <li><strike>Twitch login</strike></li>
+    <li><em>"Featured"</em> channels</li>
+  </ul>
+</div>
+{% endblock %}

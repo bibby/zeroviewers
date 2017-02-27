@@ -1,0 +1,49 @@
+<div class="paging row">
+  <div class="two columns">
+    {% if page_num > 1 %}
+    <a class="button button-primary" href="{{meta.page_slug}}/1">First</a>
+    {% else %}
+    <a class="button disabled">First</a>
+    {% endif %}
+  </div>
+
+  <div class="two columns">
+    {% if prev_page %}
+    <a class="button button-primary" href="{{meta.page_slug}}/{{prev_page}}">Previous</a>
+    {% else %}
+    <a class="button disabled">Previous</a>
+    {% endif %}
+  </div>
+
+  <div class="three columns selector">
+    <label>
+      Page
+      <select class="page_selector" data-slug="{{meta.page_slug}}">
+      {% for p in range(1, pages + 1) %}
+        {% if p == page_num %}
+          <option selected="selected">{{p}}</option>
+        {% else %}
+          <option>{{p}}</option>
+        {% endif %}
+      {% endfor %}
+      </select>
+      of {{pages}}
+    </label>
+  </div>
+
+  <div class="two columns">
+    {% if next_page %}
+    <a class="button button-primary" href="{{meta.page_slug}}/{{next_page}}">Next</a>
+    {% else %}
+    <a class="button disabled">Next</a>
+    {% endif %}
+  </div>
+
+  <div class="two columns">
+    {% if next_page %}
+    <a class="button button-primary" href="{{meta.page_slug}}/{{pages}}">Last</a>
+    {% else %}
+    <a class="button disabled">Last</a>
+    {% endif %}
+  </div>
+</div>

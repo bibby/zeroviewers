@@ -1,0 +1,18 @@
+{% extends 'base.j2' %}
+
+{% block content %}
+<div class="container">
+  <h2>Donations</h2>
+  <p>
+    We hope that you're enjoying the site, making contact with new streamers, and spreading good vibes.
+  </p>
+  <p>
+    If you would like to help keep this service running, please consider donating towards its operating costs.<br />
+    Every $10 USD donated keeps the site live for an entire month in its current state.
+  </p>
+
+  <p>
+    <a href="{{meta.donate_url}}">Donate here</a> via {{meta.donate_service}}, with our eternal gratitude.
+  </p>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.j2' %}
+
+{% block content %}
+<div class="container">
+<h2>new streamers, new perspectives.</h2>
+<p>
+  Without a doubt, <a href="https://www.twitch.tv" target="twitch.tv">Twitch.tv</a> is a competitive place.<br />
+  <br />
+  <code>{{meta.total}}</code> streams are live as of
+  <span class="uptime" data-time="{{meta.cached}}">moments</span> ago.
+  <br />
+  <code>{{meta.channel_count}}</code> of those have {{meta.max_viewers}} viewers or fewer.<br />
+  <code>{{meta.zero_viewers}}</code> of those have no viewers at all.<br />
+</p>
+
+<p>
+  Take a moment to browse a brand new channel, or perhaps make someone's day by popping in to say "Hello".
+</p>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('static', filename='js/timer.js') }}"></script>
+{% endblock %}

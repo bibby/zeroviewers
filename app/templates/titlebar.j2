@@ -1,0 +1,23 @@
+<div class="titlebar">
+  <label class="right">
+    <span>
+      Broadcast Language
+    </span>
+    <select id="language">
+      <option value="_"{% if not meta.lang %} selected="selected"{% endif %}>Any</option>
+      {% for lang in meta.languages %}
+      <option value="{{lang.code}}" {% if meta.lang == lang.code %} selected="selected"{% endif %}>
+      {{lang.name}}
+      </option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <h1>
+    <a href="/">ZeroViewers</a>
+    <sub>
+      <small>{{meta.app_phase}}</small>
+    </sub>
+  </h1>
+</div>
+{% include 'nav.j2' %}

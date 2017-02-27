@@ -1,0 +1,111 @@
+<div class="row channel-box">
+  <div class="five columns preview">
+    <a href="{{channel.url}}" target="twitch-{{ channel.name }}">
+      <img src="{{channel.preview}}" />
+    </a>
+  </div>
+  <div class="seven columns">
+    <div class="row">
+      <div class="channel-name six columns">
+        <a href="{{channel.url}}" target="twitch-{{ channel.name }}">
+        {{ channel.display_name }}
+        </a>
+      </div>
+      <div class="channel-name one columns">
+        <span>{{channel.language}}</span>
+      </div>
+    </div>
+
+    {% if channel.status %}
+    <div class="row">
+      <div class="channel-status ten columns">
+        <em>
+          {{ channel.status }}
+        </em>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+      <div class="two columns">
+        Game
+      </div>
+      <div class="five columns">
+        <a href="/games/{{channel.game_hash}}">
+          {{channel.game}}
+        </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="two columns">
+        Uptime
+      </div>
+      <div class="two columns">
+        <span class="uptime"
+          data-time="{{channel.uptime}}"
+          data-raw="{{channel.created}}">
+        </span>
+      </div>
+
+      <div class="two columns">
+        {% if meta.logged_in %}
+        {% if channel.name in meta.upvotes %}
+        <button
+          class="star-button button-primary starred"
+          title="You've starred this channel! That's awesome of you. Click again to remove star."
+          data-stream="{{channel.name}}">
+          <img class="star" src="{{ url_for('static', filename='images/star.png') }}" />
+          <span class="label">Starred</span>
+        {% else %}
+        <button
+          class="star-button button-primary"
+          title="If you liked this channel, let others know by adding a star."
+          data-stream="{{channel.name}}">
+          <img class="star" src="{{ url_for('static', filename='images/star.png') }}" />
+          <span class="label">Star</span>
+        {% endif %}
+        </button>
+        {% else %}
+        <img class="star tt" src="{{ url_for('static', filename='images/star.png') }}" title="Login to add a Star!" />
+        {% endif %}
+      </div>
+      <div class="two columns stars">
+        {{channel.stars}}
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="two columns">
+        Viewers
+      </div>
+      <div class="two columns">
+        {{channel.viewers}}
+      </div>
+
+      <div class="two columns">
+        Views
+      </div>
+      <div class="two columns">
+        {{channel.views}}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="two columns">
+        Followers
+      </div>
+      <div class="two columns">
+        {{channel.followers}}
+      </div>
+
+      <div class="two columns">
+        AvgFPS
+      </div>
+      <div class="two columns">
+        {{channel.average_fps}}
+      </div>
+    </div>
+  </div>
+</div>

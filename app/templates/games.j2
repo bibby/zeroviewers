@@ -1,0 +1,53 @@
+{% extends 'base.j2' %}
+
+{% block content %}
+<div class="container">
+  <h2>Games</h2>
+  <p>
+    <span>
+      Games currently being played live on
+    </span>
+    <a href="https://twitch.tv" target="twitch">twitch.tv</a>
+    <span>
+      with {{meta.max_viewers}} viewers{% if meta.max_viewers > 0 %} or fewer{% endif %}.
+    </span>
+    <br />
+    <span>
+      Updated <span class="uptime" data-time="{{meta.cached}}">??</span> ago.
+    </span>
+  </p>
+
+  <p>
+    <span>Sort by</span>
+    <a href="?sort=game">Game</a> |
+    <a href="?sort=streams">Streams</a>
+  </p>
+
+  <table id="games">
+    <thead>
+      <tr>
+        <th>Streams</th>
+        <th>Game</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for game in games %}
+      <tr>
+        <td>{{game[1]}}</td>
+        <td>
+          <a href="/games/{{game[0]}}">
+          {{game[2] | default('None') }}
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('static', filename='js/timer.js') }}"></script>
+{% endblock %}
