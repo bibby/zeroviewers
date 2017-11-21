@@ -1,7 +1,7 @@
 import os
 
 APP_PHASE = 'beta'
-APP_VERSION = '0.4.2, 19 Jun 2016'
+APP_VERSION = '0.5.2, 12 Nov 2017'
 
 LOGIN_ENABLED = bool(int(os.environ.get('LOGIN_ENABLED', 1)))
 CONTACT_EMAIL = 'zeroviewsite@gmail.com'

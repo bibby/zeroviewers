@@ -16,12 +16,16 @@
   <p>
     Displaying channels <strong>{{meta.range_min}} &mdash; {{meta.range_max}}</strong> of {{meta.filtered_count}}.
     <br />
+    <a target="zv_random" href="/random/{{meta.game_hash}}">Random</a>
+    &mdash;
     Sort by <a href="?sort=stars">Stars</a> |
     <a href="?sort=views">Views</a> |
     <a href="?sort=followers">Followers</a> |
     <a href="?sort=viewers">Viewers</a> |
     <a href="?sort=uptime">Uptime</a> |
     <a href="?sort=fps">Fps</a>
+
+
   </p>
 {% for channel in channels %}
   {% include 'channel.j2' %}

@@ -1,3 +1,5 @@
+import urllib
+
 from peewee import *
 from consts import PAGE_MAX_ITEMS
 from log import logger
@@ -42,6 +44,7 @@ class Stream(BaseModel):
 class User(BaseModel):
     name = CharField(unique=True)
     created = DateTimeField(default=datetime.datetime.now)
+    lang = FixedCharField(null=True, max_length=2)
 
 
 class Upvote(BaseModel):
@@ -62,6 +65,11 @@ class Upvote(BaseModel):
         indexes = (
             (('viewer', 'streamer'), True),
         )
+
+
+class Game(BaseModel):
+    name = CharField(unique=True)
+    hash = CharField(unique=True)
 
 
 def upvote(viewer, streamer, up=True):
@@ -97,6 +105,23 @@ def did_user_star(viewer, streamer):
         Upvote.streamer == streamer,
     )
     return stars.count() == 1
+
+
+def hash_for_name(name):
+    if not name:
+        return None
+    name = urllib.unquote_plus(name)
+    game = Game.select().where(
+        Game.name == name
+    )
+    for g in game:
+        return g.hash
+
+
+def has_hash(hash):
+    game = Game.select().where(Game.hash == hash)
+    for g in game:
+        return g.hash
 
 
 def query_streams(filters, sort=None, page=1):
@@ -146,7 +171,15 @@ def count_streams(filters):
 
 
 def add_user(name):
-    User.create_or_get(name=name)
+    return User.get_or_create(name=name)
+
+
+def set_lang(name, lang):
+    (user, created) = add_user(name)
+    user.lang = lang
+    logger.info("lang = %s", lang)
+    user.save()
+    return user
 
 
 def purge_streams(dbnum):
@@ -170,12 +203,12 @@ def get_upvotes(user):
 sorts = {
     "stars": (
         fn.COUNT(Upvote.id).desc(),
-        Stream.views.desc(),
+        Stream.followers.desc(),
     ),
     "viewers": (
         Stream.viewers.desc(),
         fn.COUNT(Upvote.id).desc(),
-        Stream.views.desc(),
+        Stream.followers.desc(),
     ),
     "views": (
         Stream.views.desc(),
@@ -192,10 +225,14 @@ sorts = {
     "fps": (
         Stream.average_fps.desc(),
         fn.COUNT(Upvote.id).desc(),
+        Stream.followers.desc(),
+    ),
+    "random": (
+        fn.Random(),
     )
 }
 
 if mktables:
     sql_db.connect()
-    sql_db.create_tables([User, Stream, Upvote], safe=True)
+    sql_db.create_tables([User, Stream, Upvote, Game], safe=True)
     sql_db.close()

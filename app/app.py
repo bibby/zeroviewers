@@ -6,16 +6,21 @@ import requests
 import json
 import os
 import math
+import random
 from xml.sax.saxutils import escape
 import iso639
 from red import Red, streamer_key, game_key
+from werkzeug.routing import BaseConverter
 from db import upvote, query_streams, count_streams, \
-    count_stars, add_user, get_upvotes
+    count_stars, add_user, get_upvotes, set_lang, hash_for_name, Game
 from consts import PAGE_MAX_ITEMS, GAMES, CHANNELS, META_DATA, \
     MIN_LIVE_MINUTES, MAX_LIVE_MINUTES, LOGIN_ENABLED, \
     MAX_VIEWERS, TOTAL_LIVE, APP_VERSION, ZERO_VIEWERS, \
     LANGUAGES, CHANNEL_COUNT, APP_PHASE, CONTACT_EMAIL, \
     DONATE_URL, DONATE_SERVICE
+import urllib
+from markupsafe import Markup
+
 
 app = Flask(__name__)
 app.secret_key = "__this_key_can_be_changed.__Its_for_session_data."
@@ -53,6 +58,15 @@ def before_request():
     logger.debug("Setup Active DB: %s", active)
 
 
+@app.template_filter('urlencode')
+def urlencode_filter(s):
+    if type(s) == 'Markup':
+        s = s.unescape()
+    s = s.encode('utf8')
+    s = urllib.quote_plus(s)
+    return Markup(s)
+
+
 @app.route('/')
 def index():
     return render_template(
@@ -64,14 +78,13 @@ def index():
 
 @app.route('/login')
 def login():
-    callback = os.environ.get("TWITCH_CALLBACK",
-                              "http://localhost:3000/authorize")
+    callback = os.environ.get("TWITCH_CALLBACK")
     return twitch.authorize(callback=callback)
 
 
 @app.route('/logout')
 def logout():
-    session.pop('twitch_token', None)
+    session.clear()
     return redirect(url_for('index'))
 
 
@@ -95,7 +108,10 @@ def authorize():
     name = json.loads(r.text).get("token").get("user_name", None)
     if name:
         session['user_name'] = name
-        add_user(name)
+        (user, created) = add_user(name)
+        if user and user.lang:
+            logger.info('lang = %s', user.lang)
+            session['lang'] = user.lang
 
     return redir_home()
 
@@ -129,8 +145,12 @@ def set_language():
         languages = cache.meta_db().smembers(LANGUAGES)
         if lang in languages:
             session["lang"] = lang
+            if logged_in():
+                set_lang(session['user_name'], lang)
         elif lang == u'_':
             session.pop("lang")
+            if logged_in():
+                set_lang(session['user_name'], '')
     return lang
 
 
@@ -176,7 +196,12 @@ def games_index():
     )
 
 
-@app.route('/games/<game_hash>')
+class GameNameConverter(BaseConverter):
+  pass
+#app.url_map.converters['list'] = ListConverter
+
+
+@app.route('/games/<string:game_hash>')
 def game_page(game_hash):
     return page(game=game_hash)
 
@@ -206,6 +231,27 @@ def vote_down(streamer):
     return vote(streamer, False)
 
 
+@app.route('/random')
+def random_any():
+    channels, meta = get_channels(1, None, "random")
+    if not channels:
+        return redirect('/games')
+    random.shuffle(channels)
+    return redirect(channels[0].get("url"))
+
+
+@app.route('/random/<game_hash>')
+def random_stream(game_hash):
+    named_hash = hash_for_name(game_hash)
+    if named_hash:
+        game_hash = named_hash
+    channels, meta = get_channels(1, game_hash, "random")
+    if not channels:
+        return redirect('/games')
+    random.shuffle(channels)
+    return redirect(channels[0].get("url"))
+
+
 def vote(streamer, updown):
     if not logged_in():
         return redirect(url_for('login'))
@@ -232,6 +278,9 @@ def is_channel(streamer):
 
 
 def page(page_num=1, game=None):
+    named_hash = hash_for_name(game)
+    if named_hash:
+        game = named_hash
     sort = request.args.get('sort', None)
     additional = {
         "site_title": "ZeroViewers - page %d" % (page_num,),
@@ -287,9 +336,14 @@ def get_channels(page_num, game=None, sort=None):
     llen = count_streams(filters)
 
     game_name = "Channels"
+    game_hash = ""
     if game:
+        game_hash = game
         game_name = db.get(game_key(game))
-        game_name = escape(game_name.decode('utf-8'))
+        if game_name:
+            game_name = escape(game_name.decode('utf-8'))
+        else:
+            game_name = 'None'
 
     range_min = ((page_num - 1) * PAGE_MAX_ITEMS) + 1
     range_max = min(llen, range_min + PAGE_MAX_ITEMS - 1)
@@ -300,6 +354,7 @@ def get_channels(page_num, game=None, sort=None):
         "range_min": range_min,
         "range_max": range_max,
         "game_name": game_name,
+        "game_hash": game_hash,
         "filtered_count": llen,
     })
 

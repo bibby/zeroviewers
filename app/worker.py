@@ -11,7 +11,7 @@ import os
 from requests.exceptions import Timeout
 from dateutil.parser import parse as dateparse
 from red import Red, streamer_key, game_key
-from db import sql_db, Stream
+from db import sql_db, Stream, hash_for_name, Game, has_hash
 from collections import Counter
 from consts import GAMES, META_DATA, CHANNEL_COUNT, LANGUAGES, \
     MAX_VIEWERS, TOTAL_LIVE, ZERO_VIEWERS, API_MAX_ITEMS, \
@@ -22,7 +22,8 @@ from consts import GAMES, META_DATA, CHANNEL_COUNT, LANGUAGES, \
 cache = Red()
 game_index = {
     "hashes": {},
-    "counters": {}
+    "counters": {},
+    "names": {},
 }
 
 languages = set()
@@ -165,6 +166,15 @@ def start_runback():
     for obj in stream_dicts:
         Stream(**obj).save()
 
+    game_names = game_index.get("hashes")
+    for hash, name in game_names.iteritems():
+        if not has_hash(hash):
+            try:
+                Game(name=name, hash=hash).save()
+            except Exception as e:
+                logger.exception(e)
+                logger.warning('Issue with ' + name)
+
     sql_times.append(time.time() - sql_start_time)
     sql_db.commit()
     sql_db.close()
@@ -225,12 +235,15 @@ def add_stream(stream, red_db, meta_db, game_index):
         game_counters[language] = game_counter_lang
 
     game_hashes = game_index.get("hashes")
+    game_names = game_index.get("names")
 
-    game = channel.get("game", "None")
+    game = channel["game"] = channel.get("game") or "None"
+    game = game.replace('/', '|')
     game_hash = hashmd5(game or 'None')
     game_counter_all[game_hash] += 1
     game_counter_lang[game_hash] += 1
     game_hashes[game_hash] = game
+    game_names[game] = game_hash
 
     logger.debug("Game: %s, Hash: %s", game, game_hash)
 
